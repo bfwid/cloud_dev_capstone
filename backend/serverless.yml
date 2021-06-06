@@ -1,0 +1,461 @@
+service:
+  name: serverless-chat
+
+plugins:
+  - serverless-webpack
+  - serverless-iam-roles-per-function
+  - serverless-aws-documentation
+  - serverless-reqvalidator-plugin
+
+# Reference: https://www.serverless.com/plugins/serverless-iam-roles-per-function
+# X-ray Tracing: https://serverless-stack.com/chapters/tracing-serverless-apps-with-x-ray.html
+#  - Provides end-to-end visualization and metrics for our requests
+
+package:
+  individually: true
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+
+  stage: ${opt:stage, 'dev'}
+  region: ${opt:region, 'us-east-2'}
+
+  tracing:
+    lambda: true
+    apiGateway: true
+
+  environment:
+    USER_TABLE: user-${self:provider.stage}
+    SERVER_TABLE: server-${self:provider.stage}
+    CHANNEL_TABLE: channel-${self:provider.stage}
+    CHANNEL_CREATEDAT_INDEX: channel-idx-created-at-${self:provider.stage}
+    MESSAGE_TABLE: message-${self:provider.stage}
+    MESSAGE_CREATEDAT_INDEX: message-idx-created-at-${self:provider.stage}
+    REGION: ${self:provider.region}
+    IMAGE_S3_BUCKET: image-bucket-bfwid-${self:provider.stage}
+    SIGNED_URL_EXPIRATION: 300
+
+custom:
+  documentation:
+    api:
+      info:
+        version: v1.0.0
+        title: Serverless Chat Application
+        description: Udactiy Cloud Developer Capstone
+
+functions:
+
+  Auth:
+    handler: src/lambda/auth/auth0Authorizer.handler
+
+   ### SERVER FUNCTIONS ###
+
+  CreateServer:
+    handler: src/lambda/http/server/createServer.handler
+    events:
+      - http:
+          method: post
+          path: server
+          cors: true
+          authorizer: Auth
+          request:
+            schema:
+              'application/json': ${file(models/server-schema.json)}
+          reqValidatorName: RequestBodyValidator
+          documentation:
+            summary: Create a new Server
+            description: Create a new Server
+    iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:PutItem
+      Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.SERVER_TABLE}
+    - Effect: Allow
+      Action:
+        - xray:PutTraceSegments
+      Resource: '*'
+  
+    ### Channel Functions ###
+
+  GetChannels:
+    handler: src/lambda/http/channel/getChannels.handler
+    events:
+      - http:
+          method: get
+          path: server/{serverId}
+          cors: true
+          authorizer: Auth
+    iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:Scan
+      Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.CHANNEL_TABLE}
+    - Effect: Allow
+      Action:
+        - xray:PutTraceSegments
+      Resource: '*'
+
+  CreateChannel:
+    handler: src/lambda/http/channel/createChannel.handler
+    events:
+      - http:
+          method: post
+          path: server/{serverId}
+          cors: true
+          authorizer: Auth
+          request:
+            schema:
+              'application/json': ${file(models/channel-schema.json)}
+          reqValidatorName: RequestBodyValidator
+          documentation:
+            summary: Create a new Channel
+            description: Create a new Channel
+    iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:PutItem
+      Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.CHANNEL_TABLE}
+    - Effect: Allow
+      Action:
+        - xray:PutTraceSegments
+      Resource: '*'
+
+
+  ### Message Functions ###
+
+  GetMessages:
+    handler: src/lambda/http/message/getMessages.handler
+    events:
+      - http:
+          method: get
+          path: channel/{channelId}
+          cors: true
+          authorizer: Auth
+    iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:Scan
+      Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.CHANNEL_TABLE}
+    - Effect: Allow
+      Action:
+        - dynamodb:Query
+      Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.MESSAGE_TABLE}
+    - Effect: Allow
+      Action:
+        - dynamodb:Query
+      Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.MESSAGE_TABLE}/index/${self:provider.environment.MESSAGE_CREATEDAT_INDEX}
+    - Effect: Allow
+      Action:
+        - xray:PutTraceSegments
+      Resource: '*'
+
+  CreateMessage:
+    handler: src/lambda/http/message/createMessage.handler
+    events:
+      - http:
+          method: post
+          path: channel/{channelId}
+          cors: true
+          authorizer: Auth
+          request:
+            schema:
+              'application/json': ${file(models/message-schema.json)}
+          reqValidatorName: RequestBodyValidator
+          documentation:
+            summary: Create a new Messsage within a Channel
+            description: Create a new Message within a Channel
+    iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:Query
+      Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.CHANNEL_TABLE}
+    - Effect: Allow
+      Action:
+        - dynamodb:PutItem
+      Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.MESSAGE_TABLE}
+    - Effect: Allow
+      Action:
+        - xray:PutTraceSegments
+      Resource: '*'
+
+  UpdateMessage:
+    handler: src/lambda/http/message/updateMessage.handler
+    events:
+      - http:
+          method: patch
+          path: channel/{channelId}/{messageId}
+          cors: true
+          authorizer: Auth
+          request:
+            schema:
+              'application/json': ${file(models/message-schema.json)}
+          reqValidatorName: RequestBodyValidator
+          documentation:
+            summary: Update a Message
+            description: Update a Message
+    iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:Scan
+      Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.CHANNEL_TABLE}
+    - Effect: Allow
+      Action:
+        - dynamodb:UpdateItem
+        - dynamodb:GetItem
+      Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.MESSAGE_TABLE}
+    - Effect: Allow
+      Action:
+        - xray:PutTraceSegments
+      Resource: '*'
+
+  DeleteMessage:
+    handler: src/lambda/http/message/deleteMessage.handler
+    events:
+      - http:
+          method: delete
+          path: channel/{channelId}/{messageId}
+          cors: true
+          authorizer: Auth
+          reqValidatorName: RequestBodyValidator
+    iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:Scan
+      Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.CHANNEL_TABLE}
+    - Effect: Allow
+      Action:
+        - dynamodb:DeleteItem
+        - dynamodb:GetItem
+      Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.MESSAGE_TABLE}
+    - Effect: Allow
+      Action:
+        - xray:PutTraceSegments
+      Resource: '*'
+
+  GenerateUploadUrl:
+    handler: src/lambda/http/message/generateUploadUrl.handler
+    events:
+      - http:
+          method: post
+          path: channel/{channelId}/{messageId}/attachment
+          cors: true
+          authorizer: Auth
+          reqValidatorName: RequestBodyValidator
+    iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:Scan
+      Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.CHANNEL_TABLE}
+    - Effect: Allow
+      Action:
+        - dynamodb:UpdateItem
+        - dynamodb:GetItem
+      Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.MESSAGE_TABLE}
+    - Effect: Allow
+      Action:
+        - xray:PutTraceSegments
+      Resource: '*'
+    - Effect: Allow
+      Action:
+        - s3:PutObject
+        - s3:GetObject
+      Resource: arn:aws:s3:::${self:provider.environment.IMAGE_S3_BUCKET}/*
+
+
+  ### User Functions ###
+
+  GetUserNickname:
+    handler: src/lambda/http/user/getUserNickname.handler
+    events:
+      - http:
+          method: get
+          path: user/{userId}
+          cors: true
+          authorizer: Auth
+    iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:UpdateItem
+        - dynamodb:GetItem
+      Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.USER_TABLE}
+    - Effect: Allow
+      Action:
+        - xray:PutTraceSegments
+      Resource: '*'
+
+  SetUserNickname:
+    handler: src/lambda/http/user/setUserNickname.handler
+    events:
+      - http:
+          method: post
+          path: user/{userId}
+          cors: true
+          authorizer: Auth
+          request:
+            schema:
+              'application/json': ${file(models/user-schema.json)}
+          reqValidatorName: RequestBodyValidator
+          documentation:
+            summary: Create a User Nickname
+            description: Create a User Nickname
+    iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:GetItem
+      Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.USER_TABLE}
+    - Effect: Allow
+      Action:
+        - xray:PutTraceSegments
+      Resource: '*'
+
+
+resources:
+  Resources:
+    #  - API Gateway
+    #  - DynamoDB
+    #  - Bucket
+    #  - Bucket Policy
+    GatewayResponseDefault4XX:
+      Type: AWS::ApiGateway::GatewayResponse
+      Properties:
+        ResponseParameters:
+          gatewayresponse.header.Access-Control-Allow-Origin: "'*'"
+          gatewayresponse.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
+          gatewayresponse.header.Access-Control-Allow-Methods: "'GET,OPTIONS,POST'"
+        ResponseType: DEFAULT_4XX
+        RestApiId:
+          Ref: ApiGatewayRestApi
+
+    GatewayResponseDefault5XX:
+      Type: AWS::ApiGateway::GatewayResponse
+      Properties:
+        ResponseParameters:
+          gatewayresponse.header.Access-Control-Allow-Origin: "'*'"
+          gatewayresponse.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
+          gatewayresponse.header.Access-Control-Allow-Methods: "'GET,OPTIONS,POST'"
+        ResponseType: DEFAULT_5XX
+        RestApiId:
+          Ref: ApiGatewayRestApi
+
+    MessageDynamoDBTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        AttributeDefinitions:
+          - AttributeName: messageId
+            AttributeType: S
+          - AttributeName: createdAt
+            AttributeType: S
+          - AttributeName: channelId
+            AttributeType: S
+        KeySchema:
+          - AttributeName: channelId
+            KeyType: HASH  # Reminder: Partition Key
+          - AttributeName: messageId
+            KeyType: RANGE # Reminder: Sort Key
+        BillingMode: PAY_PER_REQUEST
+        TableName: ${self:provider.environment.MESSAGE_TABLE}
+        GlobalSecondaryIndexes:
+          - IndexName: ${self:provider.environment.MESSAGE_CREATEDAT_INDEX}
+            KeySchema:
+              - AttributeName: channelId # We want to be able to obtain all messages within a channel sorted by their creation time
+                KeyType: HASH  # Reminder: Partition Key
+              - AttributeName: createdAt
+                KeyType: RANGE # Reminder: Sort Key
+            Projection:
+              ProjectionType: ALL
+
+    ChannelDynamoDBTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        AttributeDefinitions:
+          - AttributeName: channelId
+            AttributeType: S
+          - AttributeName: createdAt
+            AttributeType: S
+          - AttributeName: serverId
+            AttributeType: S
+        KeySchema:
+          - AttributeName: serverId
+            KeyType: HASH  # Reminder: Partition Key
+          - AttributeName: channelId
+            KeyType: RANGE # Reminder: Sort Key
+        BillingMode: PAY_PER_REQUEST
+        TableName: ${self:provider.environment.CHANNEL_TABLE}
+        GlobalSecondaryIndexes:
+          - IndexName: ${self:provider.environment.CHANNEL_CREATEDAT_INDEX}
+            KeySchema:
+              - AttributeName: serverId # We want to be able to obtain all channels within a server sorted by their creation time
+                KeyType: HASH  # Reminder: Partition Key
+              - AttributeName: createdAt
+                KeyType: RANGE # Reminder: Sort Key
+            Projection:
+              ProjectionType: ALL
+
+    ServerDynamoDBTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        AttributeDefinitions:
+          - AttributeName: serverId
+            AttributeType: S
+        KeySchema:
+          - AttributeName: serverId
+            KeyType: HASH  # Reminder: Partition Key
+        BillingMode: PAY_PER_REQUEST
+        TableName: ${self:provider.environment.SERVER_TABLE}
+
+    UserDynamoDBTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        AttributeDefinitions:
+          - AttributeName: userId
+            AttributeType: S
+        KeySchema:
+          - AttributeName: userId
+            KeyType: HASH  # Reminder: Partition Key
+        BillingMode: PAY_PER_REQUEST
+        TableName: ${self:provider.environment.USER_TABLE}
+
+    AttachmentsBucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: ${self:provider.environment.IMAGE_S3_BUCKET}
+        CorsConfiguration:
+          CorsRules:
+            -
+              AllowedOrigins:
+                - '*'
+              AllowedHeaders:
+                - '*'
+              AllowedMethods:
+                - GET
+                - PUT
+                - POST
+                - DELETE
+                - HEAD
+              MaxAge: 3000
+
+    BucketPolicy:
+      Type: AWS::S3::BucketPolicy
+      Properties:
+        PolicyDocument:
+          Id: MyPolicy
+          Version: "2012-10-17"
+          Statement:
+            - Sid: PublicReadForGetBucketObjects
+              Effect: Allow
+              Principal: '*'
+              Action: 's3:GetObject'
+              Resource: 'arn:aws:s3:::${self:provider.environment.IMAGE_S3_BUCKET}/*'
+        Bucket: !Ref AttachmentsBucket
+
+    RequestBodyValidator:
+      Type: AWS::ApiGateway::RequestValidator
+      Properties:
+        Name: 'request-body-validator'
+        RestApiId:
+          Ref: ApiGatewayRestApi
+        ValidateRequestBody: true
+        ValidateRequestParameters: false
