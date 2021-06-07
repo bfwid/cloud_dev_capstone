@@ -89,8 +89,12 @@ functions:
     iamRoleStatements:
     - Effect: Allow
       Action:
-        - dynamodb:Scan
+        - dynamodb:Query
       Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.CHANNEL_TABLE}
+    - Effect: Allow
+      Action:
+        - dynamodb:Query
+      Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.CHANNEL_TABLE}/index/${self:provider.environment.CHANNEL_CREATEDAT_INDEX}
     - Effect: Allow
       Action:
         - xray:PutTraceSegments
@@ -168,7 +172,7 @@ functions:
     iamRoleStatements:
     - Effect: Allow
       Action:
-        - dynamodb:Query
+        - dynamodb:Scan
       Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.CHANNEL_TABLE}
     - Effect: Allow
       Action:
