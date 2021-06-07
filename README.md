@@ -34,6 +34,7 @@ Future enhancements include:
 * Frontend client application
 * Access control features
 * Administrative groups
+* Pagination of messages
 * Ability to "react" to messages
 
 
@@ -68,7 +69,7 @@ Each item in the Collection is described in detail below.
 ## Server
 The Server acts as the top-level structure. A Server contains Channels which contain Messages. In a future revision, the Servers will be queryable from the list of Servers to which the current user has access.
 
-#### Create Server
+### Create Server
 
 **Format**
 
@@ -106,8 +107,9 @@ Required:
 ```
 
 ## Channels
+Channels exist within a Server and contain Messages.
 
-#### Get All Channels in Server
+### Get All Channels in Server
 
 **Format**
 
@@ -127,13 +129,32 @@ None
 
 **Response**
 
-Returns a list of all Channels within the Server in the following format:
+200 OK. Returns a list of all Channels within the Server in the following format:
 
 ```
-
+{
+    "items": [
+        {
+            "serverId": "16308aed-a580-42e8-9f40-fea600a0d536",
+            "createdAt": "2021-06-07T00:52:13.367Z",
+            "channelId": "5b291967-326e-4628-837c-ec774b2e6654",
+            "description": "Channel for open discussion",
+            "name": "General Chat",
+            "createdBy": "HZq3VRYPEVGHvJUncCC3XkeQ6wThVtgr@clients"
+        },
+        {
+            "serverId": "16308aed-a580-42e8-9f40-fea600a0d536",
+            "createdAt": "2021-06-07T00:53:26.887Z",
+            "channelId": "fa88ed12-ff25-4d86-87e0-45e70783d3e1",
+            "description": "For chatting about software development",
+            "name": "Developer Discussion",
+            "createdBy": "HZq3VRYPEVGHvJUncCC3XkeQ6wThVtgr@clients"
+        }
+    ]
+}
 ```
 
-#### Create Channel in Server
+### Create Channel in Server
 
 **Format**
 
@@ -164,7 +185,7 @@ Optional:
 
 **Response**
 
-Returns a newly created Channel in the following format:
+201 Created. Returns a newly created Channel in the following format:
 
 ```
 {
@@ -180,8 +201,9 @@ Returns a newly created Channel in the following format:
 ```
 
 ## Messages
+Messages are housed in Channels and contain user-input messages to share with other authenticated users. Messages can be modified and deleted, but only by the user who created them. A future revision will allow administrative users to remove unwanted messages. Messages may also contain images. They are stored in chronological order. Another future revision will include pagination.
 
-#### Get All Messages in Channel
+### Get All Messages in Channel
 
 **Format**
 
@@ -201,13 +223,37 @@ None
 
 **Response**
 
-Returns the Messages stored within the Channel in the following format:
+200 OK. Returns the Messages stored within the Channel in the following format:
 
 ```
-
+{
+    "items": [
+        {
+            "createdAt": "2021-06-07T00:55:12.154Z",
+            "message": "Hello, World!",
+            "channelId": "5b291967-326e-4628-837c-ec774b2e6654",
+            "messageId": "e0de68e7-0a27-4eac-aff7-05554f6f1136",
+            "createdBy": "HZq3VRYPEVGHvJUncCC3XkeQ6wThVtgr@clients"
+        },
+        {
+            "createdAt": "2021-06-07T00:56:54.752Z",
+            "message": "Hey!",
+            "channelId": "5b291967-326e-4628-837c-ec774b2e6654",
+            "messageId": "985e69e5-e98f-4480-a365-0f986871f733",
+            "createdBy": "HZq3VRYPEVGHvJUncCC3XkeQ6wThVtgr@clients"
+        },
+        {
+            "createdAt": "2021-06-07T00:57:06.554Z",
+            "message": "How are you?",
+            "channelId": "5b291967-326e-4628-837c-ec774b2e6654",
+            "messageId": "cebdd7db-b695-4ac5-926b-bcc191e69a9b",
+            "createdBy": "HZq3VRYPEVGHvJUncCC3XkeQ6wThVtgr@clients"
+        }
+    ]
+}
 ```
 
-#### Create Message in Server
+### Create Message in Server
 
 **Format**
 
@@ -234,13 +280,21 @@ Required:
 
 **Response**
 
-Returns a newly created Message in the following format:
+201 Created. Returns a newly created Message in the following format:
 
 ```
-
+{
+    "item": {
+        "channelId": "5b291967-326e-4628-837c-ec774b2e6654",
+        "messageId": "e0de68e7-0a27-4eac-aff7-05554f6f1136",
+        "createdBy": "HZq3VRYPEVGHvJUncCC3XkeQ6wThVtgr@clients",
+        "createdAt": "2021-06-07T00:55:12.154Z",
+        "message": "Hello, World!"
+    }
+}
 ```
 
-#### Update Message in Server
+### Update Message in Server
 
 **Format**
 
@@ -262,15 +316,19 @@ Required:
 
 ```
 {
-	"message": "Hello, World!"
+	"message": "Hello, friends!"
 }
 ```
 
 **Response**
 
-Nothing returned in JSON format.
+200 OK.
 
-#### Delete Message in Server
+```
+{}
+```
+
+### Delete Message in Server
 
 **Format**
 
@@ -291,10 +349,10 @@ None
 
 **Response**
 
-Nothing returned in JSON format.
+204 No Content.
 
 
-#### Get Signed URL for Uploading an Image
+### Get Signed URL for Uploading an Image
 
 **Format**
 
@@ -319,42 +377,40 @@ None
 Returns the Signed URL in the following format:
 
 ```
-
+{
+    "uploadUrl": "https://image-bucket-bfwid-dev.s3.us-east-2.amazonaws.com/e0de68e7-0a27-4eac-aff7-05554f6f1136.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=ASIAXFP6BRQWLS4FOLL7%2F20210607%2Fus-east-2%2Fs3%2Faws4_request&X-Amz-Date=20210607T010227Z&X-Amz-Expires=300&X-Amz-Security-Token=IQoJb3JpZ2luX2VjEJn%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FwEaCXVzLWVhc3QtMiJHMEUCIQClOh7sJ8n4c5FzLied%2FKdiM2%2FxNFBCRHmPOEvKgTlSXwIgdjXGXmZp9m%2FN3Www%2BRzWzTT2Wh73pA9BqHYjve8m%2B%2FcqqgIIUhAAGgw0OTI4NDM0MDQzMzIiDKz2gdDnbjxbGok3DCqHArgutN7PP8x%2B1irr70Esrr8lGSV3lxJHi4KFDl5%2FAFA2bdtfcw1RJKWHo%2F6E%2Bh%2BovxgHmeKvyVMdcYApQ%2B%2FUDp5yZ6DEepukN2NCGubIhZnaCFruEX9ej8u8VptriT%2FYfAqyAepbAcurL%2BePi%2Bd4iBpOXipK%2B3yyDq8VGcN%2B%2FSIibqfRWULWbx5HCd31KE%2Fke3ZewiWmBjCmlUWWP%2FyRoIuitLCgWudw0dFKLh10rfO7bx4OeuMjN0xb7Cv2uRMK79yLnqyF7xrmDRNOxznxJAWlw0v1VcvjSieMBxAx1Xm%2FB2lcJXT2yuC3oIGE5nv9EZFJwFf6SpTaMMXgUp%2FRKZCZO0vxE5f7MKLg9YUGOpoB5ZNY%2FbFEjVGOtvq%2BTFtI5O63fBBSmFSLoVqGSa10lcfC6Ss0rF2RqwPLZD8ovNO32VdORVQukYNJmpNTF4cW4eosfUvkl2BIHv4yOdy%2FLW9%2Be0IQ7hLtGQXDA3WDFf%2B17lqmkVEbLPRmx5aYvACnCVZJtvv4qPn8yDiPdqxrn6nYNcByov31JKHlUnVsMCyyECD3I6ghrVeE2w%3D%3D&X-Amz-Signature=fb300d763b785a8987c634a7f7bf2a333a6b82e3ea690859b023178a767f34e4&X-Amz-SignedHeaders=host"
+}
 ```
 
 
-#### Upload Image to Message
+### Upload Image to Message
 
 **Format**
 
 Type: PUT
 *Note* Authentication must be disabled - the Signed URL provides its own signature.
 
-Use the URL retrieved via "Get Signed URL for Uploading an Image."
+Use the "uploadUrl" retrieved via "Get Signed URL for Uploading an Image."
 
 
 **Body**
 
-None
+Select an image from your machine to upload.
 
 
 **Response**
 
-Returns the S3 URL in the following format:
-
-```
-
-```
+200 OK.
 
 
-#### Upload Image to Message
+### Upload Image to Message
 
 **Format**
 
-Type: Get
+Type: GET
 *Note* Authentication should be disabled - the Signed URL provides its own signature.
 
-Use the URL retrieved via "Upload Image to Message."
+Return to "Get All Messages in Channel" to locate an "attachmentURL".
 
 **Body**
 
@@ -364,11 +420,12 @@ None
 
 The image from S3.
 
-## User ##
+
+## User
 
 These functions are intended to allow users to save a nickname for display in that chat. If no nickname is provided, the userId is returned.
 
-#### Get User Nickname
+### Get User Nickname
 
 **Format**
 
@@ -396,7 +453,7 @@ The user's nickname for use within the application in the following format.
 }
 ```
 
-#### Set User Nickname
+### Set User Nickname
 Note: This can be used for both the initial setting of the nickname or the update of an established one.
 
 **Format**
