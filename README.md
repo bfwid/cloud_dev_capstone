@@ -16,7 +16,7 @@ This application acts as simple chat program, intended for simple communication 
 
 The chat application allows users to communicate in different channels created within a parent server. Within a channel, a user can submit a message; the message will be logged with the user's name and the timestamp at which the message was created. A function exists to set an application-wide nickname for the user. Images can also be shared. Authentication will be required to communicate or review messages.
 
-* Login
+* Authentication
 * Create/Edit Nickname
 * Create Server
 * View all Channels within a Server

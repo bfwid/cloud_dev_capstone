@@ -128,6 +128,11 @@ functions:
 
   ### Message Functions ###
 
+  # A note on Scan usage: These could easily be replaced by passing in the serverId, channelId, and messageId
+  # where relevant; however, this became very clunky and hard to read via Postman. This is used simply to
+  # verify that a Channel exists (or provide a friendly error message) without having to provide the serverId 
+  # in these calls. As verification was not technically required, this check could have also been eliminated.
+
   GetMessages:
     handler: src/lambda/http/message/getMessages.handler
     events:
