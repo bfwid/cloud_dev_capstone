@@ -471,7 +471,7 @@ https://{{apiId}}.execute-api.us-east-2.amazonaws.com/dev/user/{{userId}}
 **Body**
 
 Required:
-* nickname: The channel's name
+* nickname: The users's nickname
 
 ```
 {
