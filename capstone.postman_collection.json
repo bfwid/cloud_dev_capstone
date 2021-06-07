@@ -1,17 +1,17 @@
 {
 	"info": {
-		"_postman_id": "d0700d24-79ec-487e-8403-b565bef7f8e0",
+		"_postman_id": "12b7abf6-4b5f-42f0-a223-c639383fcfe8",
 		"name": "Udacity Capstone",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
 		{
-			"name": "TODOs",
+			"name": "Server",
 			"item": [
 				{
-					"name": "Get all todos",
+					"name": "Create Server",
 					"request": {
-						"method": "GET",
+						"method": "POST",
 						"header": [
 							{
 								"key": "Authorization",
@@ -21,28 +21,132 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": ""
+							"raw": "{\r\n\t\"name\": \"Default Server\"\r\n}"
 						},
 						"url": {
-							"raw": "https://{{apiId}}.execute-api.us-east-1.amazonaws.com/dev/todos",
+							"raw": "https://{{apiId}}.execute-api.us-east-2.amazonaws.com/dev/server",
 							"protocol": "https",
 							"host": [
 								"{{apiId}}",
 								"execute-api",
-								"us-east-1",
+								"us-east-2",
 								"amazonaws",
 								"com"
 							],
 							"path": [
 								"dev",
-								"todos"
+								"server"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Channels",
+			"item": [
+				{
+					"name": "Get All Channels in Server",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "https://{{apiId}}.execute-api.us-east-2.amazonaws.com/dev/server/16308aed-a580-42e8-9f40-fea600a0d536",
+							"protocol": "https",
+							"host": [
+								"{{apiId}}",
+								"execute-api",
+								"us-east-2",
+								"amazonaws",
+								"com"
+							],
+							"path": [
+								"dev",
+								"server",
+								"16308aed-a580-42e8-9f40-fea600a0d536"
 							]
 						}
 					},
 					"response": []
 				},
 				{
-					"name": "Create todo",
+					"name": "Create Channel in Server",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\t\"name\": \"Developer Discussion\",\r\n    \"description\": \"For chatting about software development\"\r\n}"
+						},
+						"url": {
+							"raw": "https://{{apiId}}.execute-api.us-east-2.amazonaws.com/dev/server/16308aed-a580-42e8-9f40-fea600a0d536",
+							"protocol": "https",
+							"host": [
+								"{{apiId}}",
+								"execute-api",
+								"us-east-2",
+								"amazonaws",
+								"com"
+							],
+							"path": [
+								"dev",
+								"server",
+								"16308aed-a580-42e8-9f40-fea600a0d536"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Messages",
+			"item": [
+				{
+					"name": "Get All Messages in Channel",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "https://{{apiId}}.execute-api.us-east-2.amazonaws.com/dev/channel/5b291967-326e-4628-837c-ec774b2e6654",
+							"protocol": "https",
+							"host": [
+								"{{apiId}}",
+								"execute-api",
+								"us-east-2",
+								"amazonaws",
+								"com"
+							],
+							"path": [
+								"dev",
+								"channel",
+								"5b291967-326e-4628-837c-ec774b2e6654"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Message in Channel",
 					"request": {
 						"method": "POST",
 						"header": [
@@ -60,30 +164,31 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n\t\"name\": \"Water flowers\",\n\t\"dueDate\": \"2019-06-11\"\n}"
+							"raw": "{\n\t\"message\": \"How are you?\"\n}"
 						},
 						"url": {
-							"raw": "https://{{apiId}}.execute-api.us-east-1.amazonaws.com/dev/todos",
+							"raw": "https://{{apiId}}.execute-api.us-east-2.amazonaws.com/dev/channel/5b291967-326e-4628-837c-ec774b2e6654",
 							"protocol": "https",
 							"host": [
 								"{{apiId}}",
 								"execute-api",
-								"us-east-1",
+								"us-east-2",
 								"amazonaws",
 								"com"
 							],
 							"path": [
 								"dev",
-								"todos"
+								"channel",
+								"5b291967-326e-4628-837c-ec774b2e6654"
 							]
 						}
 					},
 					"response": []
 				},
 				{
-					"name": "Update todo",
+					"name": "Update Message in Channel",
 					"request": {
-						"method": "PUT",
+						"method": "PATCH",
 						"header": [
 							{
 								"key": "Content-Type",
@@ -99,29 +204,30 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n\t\"name\": \"Change the world\",\n\t\"dueDate\": \"2019-12-11\",\n\t\"done\": true\n}"
+							"raw": "{\n\t\"message\": \"Hello, friends!\"\n}"
 						},
 						"url": {
-							"raw": "https://{{apiId}}.execute-api.us-east-1.amazonaws.com/dev/todos/35dd600f-43c2-4649-903c-615e1586a26f",
+							"raw": "https://{{apiId}}.execute-api.us-east-2.amazonaws.com/dev/channel/5b291967-326e-4628-837c-ec774b2e6654/e0de68e7-0a27-4eac-aff7-05554f6f1136",
 							"protocol": "https",
 							"host": [
 								"{{apiId}}",
 								"execute-api",
-								"us-east-1",
+								"us-east-2",
 								"amazonaws",
 								"com"
 							],
 							"path": [
 								"dev",
-								"todos",
-								"35dd600f-43c2-4649-903c-615e1586a26f"
+								"channel",
+								"5b291967-326e-4628-837c-ec774b2e6654",
+								"e0de68e7-0a27-4eac-aff7-05554f6f1136"
 							]
 						}
 					},
 					"response": []
 				},
 				{
-					"name": "Delete todo",
+					"name": "Delete Message in Channel",
 					"request": {
 						"method": "DELETE",
 						"header": [
@@ -142,26 +248,27 @@
 							"raw": ""
 						},
 						"url": {
-							"raw": "https://{{apiId}}.execute-api.us-east-1.amazonaws.com/dev/todos/fe671583-4512-45f6-9475-4265c04362fb",
+							"raw": "https://{{apiId}}.execute-api.us-east-2.amazonaws.com/dev/channel/5b291967-326e-4628-837c-ec774b2e6654/cebdd7db-b695-4ac5-926b-bcc191e69a9b",
 							"protocol": "https",
 							"host": [
 								"{{apiId}}",
 								"execute-api",
-								"us-east-1",
+								"us-east-2",
 								"amazonaws",
 								"com"
 							],
 							"path": [
 								"dev",
-								"todos",
-								"fe671583-4512-45f6-9475-4265c04362fb"
+								"channel",
+								"5b291967-326e-4628-837c-ec774b2e6654",
+								"cebdd7db-b695-4ac5-926b-bcc191e69a9b"
 							]
 						}
 					},
 					"response": []
 				},
 				{
-					"name": "Get attachment URL",
+					"name": "Get Signed URL for Uploading an Image to a Message",
 					"request": {
 						"method": "POST",
 						"header": [
@@ -176,20 +283,107 @@
 							"raw": ""
 						},
 						"url": {
-							"raw": "https://{{apiId}}.execute-api.us-east-1.amazonaws.com/dev/todos/3836b777-9bc4-4429-9b79-ba4e4f5f91c0/attachment",
+							"raw": "https://{{apiId}}.execute-api.us-east-2.amazonaws.com/dev/channel/5b291967-326e-4628-837c-ec774b2e6654/e0de68e7-0a27-4eac-aff7-05554f6f1136/attachment",
 							"protocol": "https",
 							"host": [
 								"{{apiId}}",
 								"execute-api",
-								"us-east-1",
+								"us-east-2",
 								"amazonaws",
 								"com"
 							],
 							"path": [
 								"dev",
-								"todos",
-								"3836b777-9bc4-4429-9b79-ba4e4f5f91c0",
+								"channel",
+								"5b291967-326e-4628-837c-ec774b2e6654",
+								"e0de68e7-0a27-4eac-aff7-05554f6f1136",
 								"attachment"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Upload Image to Message",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "file",
+							"file": {
+								"src": ""
+							}
+						},
+						"url": {
+							"raw": "https://image-bucket-bfwid-dev.s3.us-east-2.amazonaws.com/e0de68e7-0a27-4eac-aff7-05554f6f1136.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=ASIAXFP6BRQWLS4FOLL7%2F20210607%2Fus-east-2%2Fs3%2Faws4_request&X-Amz-Date=20210607T010227Z&X-Amz-Expires=300&X-Amz-Security-Token=IQoJb3JpZ2luX2VjEJn%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FwEaCXVzLWVhc3QtMiJHMEUCIQClOh7sJ8n4c5FzLied%2FKdiM2%2FxNFBCRHmPOEvKgTlSXwIgdjXGXmZp9m%2FN3Www%2BRzWzTT2Wh73pA9BqHYjve8m%2B%2FcqqgIIUhAAGgw0OTI4NDM0MDQzMzIiDKz2gdDnbjxbGok3DCqHArgutN7PP8x%2B1irr70Esrr8lGSV3lxJHi4KFDl5%2FAFA2bdtfcw1RJKWHo%2F6E%2Bh%2BovxgHmeKvyVMdcYApQ%2B%2FUDp5yZ6DEepukN2NCGubIhZnaCFruEX9ej8u8VptriT%2FYfAqyAepbAcurL%2BePi%2Bd4iBpOXipK%2B3yyDq8VGcN%2B%2FSIibqfRWULWbx5HCd31KE%2Fke3ZewiWmBjCmlUWWP%2FyRoIuitLCgWudw0dFKLh10rfO7bx4OeuMjN0xb7Cv2uRMK79yLnqyF7xrmDRNOxznxJAWlw0v1VcvjSieMBxAx1Xm%2FB2lcJXT2yuC3oIGE5nv9EZFJwFf6SpTaMMXgUp%2FRKZCZO0vxE5f7MKLg9YUGOpoB5ZNY%2FbFEjVGOtvq%2BTFtI5O63fBBSmFSLoVqGSa10lcfC6Ss0rF2RqwPLZD8ovNO32VdORVQukYNJmpNTF4cW4eosfUvkl2BIHv4yOdy%2FLW9%2Be0IQ7hLtGQXDA3WDFf%2B17lqmkVEbLPRmx5aYvACnCVZJtvv4qPn8yDiPdqxrn6nYNcByov31JKHlUnVsMCyyECD3I6ghrVeE2w%3D%3D&X-Amz-Signature=fb300d763b785a8987c634a7f7bf2a333a6b82e3ea690859b023178a767f34e4&X-Amz-SignedHeaders=host",
+							"protocol": "https",
+							"host": [
+								"image-bucket-bfwid-dev",
+								"s3",
+								"us-east-2",
+								"amazonaws",
+								"com"
+							],
+							"path": [
+								"e0de68e7-0a27-4eac-aff7-05554f6f1136.png"
+							],
+							"query": [
+								{
+									"key": "X-Amz-Algorithm",
+									"value": "AWS4-HMAC-SHA256"
+								},
+								{
+									"key": "X-Amz-Credential",
+									"value": "ASIAXFP6BRQWLS4FOLL7%2F20210607%2Fus-east-2%2Fs3%2Faws4_request"
+								},
+								{
+									"key": "X-Amz-Date",
+									"value": "20210607T010227Z"
+								},
+								{
+									"key": "X-Amz-Expires",
+									"value": "300"
+								},
+								{
+									"key": "X-Amz-Security-Token",
+									"value": "IQoJb3JpZ2luX2VjEJn%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FwEaCXVzLWVhc3QtMiJHMEUCIQClOh7sJ8n4c5FzLied%2FKdiM2%2FxNFBCRHmPOEvKgTlSXwIgdjXGXmZp9m%2FN3Www%2BRzWzTT2Wh73pA9BqHYjve8m%2B%2FcqqgIIUhAAGgw0OTI4NDM0MDQzMzIiDKz2gdDnbjxbGok3DCqHArgutN7PP8x%2B1irr70Esrr8lGSV3lxJHi4KFDl5%2FAFA2bdtfcw1RJKWHo%2F6E%2Bh%2BovxgHmeKvyVMdcYApQ%2B%2FUDp5yZ6DEepukN2NCGubIhZnaCFruEX9ej8u8VptriT%2FYfAqyAepbAcurL%2BePi%2Bd4iBpOXipK%2B3yyDq8VGcN%2B%2FSIibqfRWULWbx5HCd31KE%2Fke3ZewiWmBjCmlUWWP%2FyRoIuitLCgWudw0dFKLh10rfO7bx4OeuMjN0xb7Cv2uRMK79yLnqyF7xrmDRNOxznxJAWlw0v1VcvjSieMBxAx1Xm%2FB2lcJXT2yuC3oIGE5nv9EZFJwFf6SpTaMMXgUp%2FRKZCZO0vxE5f7MKLg9YUGOpoB5ZNY%2FbFEjVGOtvq%2BTFtI5O63fBBSmFSLoVqGSa10lcfC6Ss0rF2RqwPLZD8ovNO32VdORVQukYNJmpNTF4cW4eosfUvkl2BIHv4yOdy%2FLW9%2Be0IQ7hLtGQXDA3WDFf%2B17lqmkVEbLPRmx5aYvACnCVZJtvv4qPn8yDiPdqxrn6nYNcByov31JKHlUnVsMCyyECD3I6ghrVeE2w%3D%3D"
+								},
+								{
+									"key": "X-Amz-Signature",
+									"value": "fb300d763b785a8987c634a7f7bf2a333a6b82e3ea690859b023178a767f34e4"
+								},
+								{
+									"key": "X-Amz-SignedHeaders",
+									"value": "host"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "View Image",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://image-bucket-bfwid-dev.s3.us-east-2.amazonaws.com/e0de68e7-0a27-4eac-aff7-05554f6f1136.png",
+							"protocol": "https",
+							"host": [
+								"image-bucket-bfwid-dev",
+								"s3",
+								"us-east-2",
+								"amazonaws",
+								"com"
+							],
+							"path": [
+								"e0de68e7-0a27-4eac-aff7-05554f6f1136.png"
 							]
 						}
 					},
@@ -200,7 +394,6 @@
 				{
 					"listen": "prerequest",
 					"script": {
-						"id": "ce2b42d4-8cc5-4f30-a6ed-e7f0f303c3fd",
 						"type": "text/javascript",
 						"exec": [
 							""
@@ -210,7 +403,6 @@
 				{
 					"listen": "test",
 					"script": {
-						"id": "efb16c49-3866-4241-97d1-360ad72736d8",
 						"type": "text/javascript",
 						"exec": [
 							""
@@ -218,13 +410,97 @@
 					}
 				}
 			]
+		},
+		{
+			"name": "User",
+			"item": [
+				{
+					"name": "Get User Nickname",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "https://{{apiId}}.execute-api.us-east-2.amazonaws.com/dev/user/HZq3VRYPEVGHvJUncCC3XkeQ6wThVtgr@clients",
+							"protocol": "https",
+							"host": [
+								"{{apiId}}",
+								"execute-api",
+								"us-east-2",
+								"amazonaws",
+								"com"
+							],
+							"path": [
+								"dev",
+								"user",
+								"HZq3VRYPEVGHvJUncCC3XkeQ6wThVtgr@clients"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Set User Nickname",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"nickname\": \"CodeMonkey\"\n}"
+						},
+						"url": {
+							"raw": "https://{{apiId}}.execute-api.us-east-2.amazonaws.com/dev/user/HZq3VRYPEVGHvJUncCC3XkeQ6wThVtgr@clients",
+							"protocol": "https",
+							"host": [
+								"{{apiId}}",
+								"execute-api",
+								"us-east-2",
+								"amazonaws",
+								"com"
+							],
+							"path": [
+								"dev",
+								"user",
+								"HZq3VRYPEVGHvJUncCC3XkeQ6wThVtgr@clients"
+							]
+						}
+					},
+					"response": []
+				}
+			]
 		}
 	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{authToken}}",
+				"type": "string"
+			}
+		]
+	},
 	"event": [
 		{
 			"listen": "prerequest",
 			"script": {
-				"id": "2e83c0fe-6650-44d5-a90f-4c27ff720d83",
 				"type": "text/javascript",
 				"exec": [
 					""
@@ -234,7 +510,6 @@
 		{
 			"listen": "test",
 			"script": {
-				"id": "977c227e-2df3-42eb-9a48-ec25e2f7eeae",
 				"type": "text/javascript",
 				"exec": [
 					""
@@ -244,16 +519,12 @@
 	],
 	"variable": [
 		{
-			"id": "bf208e6b-f66d-4008-9366-dd541ff65425",
 			"key": "apiId",
-			"value": "",
-			"type": "string"
+			"value": "f2azgbbxwc"
 		},
 		{
-			"id": "9bc6399a-d2bb-4f2d-9ffa-8480370d383c",
 			"key": "authToken",
-			"value": "",
-			"type": "string"
+			"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6Ii0zOGk0NUhlVUo2LUs4SUxtUHlKWSJ9.eyJpc3MiOiJodHRwczovL2Rldi0xcjBnaDVnOS51cy5hdXRoMC5jb20vIiwic3ViIjoiSFpxM1ZSWVBFVkdIdkpVbmNDQzNYa2VRNndUaFZ0Z3JAY2xpZW50cyIsImF1ZCI6Imh0dHBzOi8vZGV2LTFyMGdoNWc5LnVzLmF1dGgwLmNvbS9hcGkvdjIvIiwiaWF0IjoxNjIzMDI0NjUyLCJleHAiOjE2MjMyODM4NTIsImF6cCI6IkhacTNWUllQRVZHSHZKVW5jQ0MzWGtlUTZ3VGhWdGdyIiwic2NvcGUiOiJyZWFkOmNsaWVudF9ncmFudHMgY3JlYXRlOmNsaWVudF9ncmFudHMgZGVsZXRlOmNsaWVudF9ncmFudHMgdXBkYXRlOmNsaWVudF9ncmFudHMgcmVhZDp1c2VycyB1cGRhdGU6dXNlcnMgZGVsZXRlOnVzZXJzIGNyZWF0ZTp1c2VycyByZWFkOnVzZXJzX2FwcF9tZXRhZGF0YSB1cGRhdGU6dXNlcnNfYXBwX21ldGFkYXRhIGRlbGV0ZTp1c2Vyc19hcHBfbWV0YWRhdGEgY3JlYXRlOnVzZXJzX2FwcF9tZXRhZGF0YSByZWFkOnVzZXJfY3VzdG9tX2Jsb2NrcyBjcmVhdGU6dXNlcl9jdXN0b21fYmxvY2tzIGRlbGV0ZTp1c2VyX2N1c3RvbV9ibG9ja3MgY3JlYXRlOnVzZXJfdGlja2V0cyByZWFkOmNsaWVudHMgdXBkYXRlOmNsaWVudHMgZGVsZXRlOmNsaWVudHMgY3JlYXRlOmNsaWVudHMgcmVhZDpjbGllbnRfa2V5cyB1cGRhdGU6Y2xpZW50X2tleXMgZGVsZXRlOmNsaWVudF9rZXlzIGNyZWF0ZTpjbGllbnRfa2V5cyByZWFkOmNvbm5lY3Rpb25zIHVwZGF0ZTpjb25uZWN0aW9ucyBkZWxldGU6Y29ubmVjdGlvbnMgY3JlYXRlOmNvbm5lY3Rpb25zIHJlYWQ6cmVzb3VyY2Vfc2VydmVycyB1cGRhdGU6cmVzb3VyY2Vfc2VydmVycyBkZWxldGU6cmVzb3VyY2Vfc2VydmVycyBjcmVhdGU6cmVzb3VyY2Vfc2VydmVycyByZWFkOmRldmljZV9jcmVkZW50aWFscyB1cGRhdGU6ZGV2aWNlX2NyZWRlbnRpYWxzIGRlbGV0ZTpkZXZpY2VfY3JlZGVudGlhbHMgY3JlYXRlOmRldmljZV9jcmVkZW50aWFscyByZWFkOnJ1bGVzIHVwZGF0ZTpydWxlcyBkZWxldGU6cnVsZXMgY3JlYXRlOnJ1bGVzIHJlYWQ6cnVsZXNfY29uZmlncyB1cGRhdGU6cnVsZXNfY29uZmlncyBkZWxldGU6cnVsZXNfY29uZmlncyByZWFkOmhvb2tzIHVwZGF0ZTpob29rcyBkZWxldGU6aG9va3MgY3JlYXRlOmhvb2tzIHJlYWQ6YWN0aW9ucyB1cGRhdGU6YWN0aW9ucyBkZWxldGU6YWN0aW9ucyBjcmVhdGU6YWN0aW9ucyByZWFkOmVtYWlsX3Byb3ZpZGVyIHVwZGF0ZTplbWFpbF9wcm92aWRlciBkZWxldGU6ZW1haWxfcHJvdmlkZXIgY3JlYXRlOmVtYWlsX3Byb3ZpZGVyIGJsYWNrbGlzdDp0b2tlbnMgcmVhZDpzdGF0cyByZWFkOmluc2lnaHRzIHJlYWQ6dGVuYW50X3NldHRpbmdzIHVwZGF0ZTp0ZW5hbnRfc2V0dGluZ3MgcmVhZDpsb2dzIHJlYWQ6bG9nc191c2VycyByZWFkOnNoaWVsZHMgY3JlYXRlOnNoaWVsZHMgdXBkYXRlOnNoaWVsZHMgZGVsZXRlOnNoaWVsZHMgcmVhZDphbm9tYWx5X2Jsb2NrcyBkZWxldGU6YW5vbWFseV9ibG9ja3MgdXBkYXRlOnRyaWdnZXJzIHJlYWQ6dHJpZ2dlcnMgcmVhZDpncmFudHMgZGVsZXRlOmdyYW50cyByZWFkOmd1YXJkaWFuX2ZhY3RvcnMgdXBkYXRlOmd1YXJkaWFuX2ZhY3RvcnMgcmVhZDpndWFyZGlhbl9lbnJvbGxtZW50cyBkZWxldGU6Z3VhcmRpYW5fZW5yb2xsbWVudHMgY3JlYXRlOmd1YXJkaWFuX2Vucm9sbG1lbnRfdGlja2V0cyByZWFkOnVzZXJfaWRwX3Rva2VucyBjcmVhdGU6cGFzc3dvcmRzX2NoZWNraW5nX2pvYiBkZWxldGU6cGFzc3dvcmRzX2NoZWNraW5nX2pvYiByZWFkOmN1c3RvbV9kb21haW5zIGRlbGV0ZTpjdXN0b21fZG9tYWlucyBjcmVhdGU6Y3VzdG9tX2RvbWFpbnMgdXBkYXRlOmN1c3RvbV9kb21haW5zIHJlYWQ6ZW1haWxfdGVtcGxhdGVzIGNyZWF0ZTplbWFpbF90ZW1wbGF0ZXMgdXBkYXRlOmVtYWlsX3RlbXBsYXRlcyByZWFkOm1mYV9wb2xpY2llcyB1cGRhdGU6bWZhX3BvbGljaWVzIHJlYWQ6cm9sZXMgY3JlYXRlOnJvbGVzIGRlbGV0ZTpyb2xlcyB1cGRhdGU6cm9sZXMgcmVhZDpwcm9tcHRzIHVwZGF0ZTpwcm9tcHRzIHJlYWQ6YnJhbmRpbmcgdXBkYXRlOmJyYW5kaW5nIGRlbGV0ZTpicmFuZGluZyByZWFkOmxvZ19zdHJlYW1zIGNyZWF0ZTpsb2dfc3RyZWFtcyBkZWxldGU6bG9nX3N0cmVhbXMgdXBkYXRlOmxvZ19zdHJlYW1zIGNyZWF0ZTpzaWduaW5nX2tleXMgcmVhZDpzaWduaW5nX2tleXMgdXBkYXRlOnNpZ25pbmdfa2V5cyByZWFkOmxpbWl0cyB1cGRhdGU6bGltaXRzIGNyZWF0ZTpyb2xlX21lbWJlcnMgcmVhZDpyb2xlX21lbWJlcnMgZGVsZXRlOnJvbGVfbWVtYmVycyByZWFkOmVudGl0bGVtZW50cyByZWFkOmF0dGFja19wcm90ZWN0aW9uIHVwZGF0ZTphdHRhY2tfcHJvdGVjdGlvbiByZWFkOm9yZ2FuaXphdGlvbnMgdXBkYXRlOm9yZ2FuaXphdGlvbnMgY3JlYXRlOm9yZ2FuaXphdGlvbnMgZGVsZXRlOm9yZ2FuaXphdGlvbnMgY3JlYXRlOm9yZ2FuaXphdGlvbl9tZW1iZXJzIHJlYWQ6b3JnYW5pemF0aW9uX21lbWJlcnMgZGVsZXRlOm9yZ2FuaXphdGlvbl9tZW1iZXJzIGNyZWF0ZTpvcmdhbml6YXRpb25fY29ubmVjdGlvbnMgcmVhZDpvcmdhbml6YXRpb25fY29ubmVjdGlvbnMgdXBkYXRlOm9yZ2FuaXphdGlvbl9jb25uZWN0aW9ucyBkZWxldGU6b3JnYW5pemF0aW9uX2Nvbm5lY3Rpb25zIGNyZWF0ZTpvcmdhbml6YXRpb25fbWVtYmVyX3JvbGVzIHJlYWQ6b3JnYW5pemF0aW9uX21lbWJlcl9yb2xlcyBkZWxldGU6b3JnYW5pemF0aW9uX21lbWJlcl9yb2xlcyBjcmVhdGU6b3JnYW5pemF0aW9uX2ludml0YXRpb25zIHJlYWQ6b3JnYW5pemF0aW9uX2ludml0YXRpb25zIGRlbGV0ZTpvcmdhbml6YXRpb25faW52aXRhdGlvbnMiLCJndHkiOiJjbGllbnQtY3JlZGVudGlhbHMifQ.bvbJoVLlNen_u0uCA0RIOhUPoaN3kwl-i60EIhALB_6MEfJ_Ntcd3YbKVpUUTACD0twtaYi0TK5crJLMTQh9uhsOM5AanJLM4quhkyAr2CWUK4hYBmR6244VVgbDDzrfCQfasvUfYvIN-V0jSsqdQ6cQcnm0MMx8L9Gr2t8B9IX6UKuSPEtfs27YUrO1SMwGHsAikp-8N86VBgfJ2LG93bTZAhX8PTZNECCDYmibTZ9LC0sReguqRZVWbv7a3nlsgvx8xaMxesqnb6iybUKu_aY3mFxDIFrqADkWl8KFgA-gg-62Qei4Q3OxBbS1yfdIQKqnjhWuUWMo8yLMosy5zw"
 		}
 	]
 }
